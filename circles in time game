@@ -1,0 +1,62 @@
+#-------------------------------------------------------------------------------
+# Name:        module1
+# Purpose:
+#
+# Author:      othmane abouelaecha
+#
+# Created:     14/03/2015
+# Copyright:   (c) othmane abouelaecha 2015
+# Licence:     <your licence>
+#-------------------------------------------------------------------------------
+
+from tkinter import *
+from chrono import *
+
+#definition des variables rayon, cercles, duree du jeu
+r=5
+cercles = []
+duree = 5
+
+def pointeur(event):
+
+    #si le temps s'acheve on s'arrete
+    #si deux cercles s'intersectent on s'arrete
+    inter = False
+
+    if chrono.value > 0:
+
+        if len(cercles) < 2 :
+            chaine.configure(text= "clic en x = " + str(event.x) + ', y = ' + str(event.y))
+            cadre.create_oval(event.x-r, event.y - r, event.x + r, event.y + r, outline='red')
+            cercles.append((event.x,event.y))
+        else :
+            # algorithme à revoir !!!
+            for c in cercles[:-1] :
+                # si la distance entre le dernier disque et un des cercles précédents est plus petit que 2r, il y a intersection, on s'arrete
+                if ( (cercles[-1][0]-c[0])**2+(cercles[-1][1]-c[1])**2 ) < 4*r**2 :
+                    inter = True
+
+                    chaine.configure(text ="Ooh, il y a intersection de deux cercles. Votre score est : " + str(len(cercles)*r/duree * 1000))
+
+
+            if not(inter) :
+                chaine.configure(text= "clic en x = " + str(event.x) + ', y = ' + str(event.y))
+                cadre.create_oval(event.x-r, event.y - r, event.x + r, event.y + r, outline='red')
+                cercles.append((event.x,event.y))
+
+    elif chrono.value == 0 :  chaine.configure(text ="Dommage le temps est fini. Votre score est : " + str(len(cercles)*r/duree * 1000))
+
+fen = Tk()
+cadre = Canvas(fen, height =150, width =200, bg ="light yellow" )
+
+
+cadre.bind("<Button-1>", pointeur)
+cadre.pack()
+chaine = Label(fen)
+chaine.pack()
+
+chrono = Chrono(fen,duree)
+chrono.pack()
+
+fen.mainloop()
+
