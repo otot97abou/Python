@@ -1,0 +1,75 @@
+#-------------------------------------------------------------------------------
+# Name:        module1
+# Purpose:
+#
+# Author:      othmane abouelaecha
+#
+# Created:     20/03/2015
+# Copyright:   (c) othmane abouelaecha 2015
+# Licence:     <your licence>
+#-------------------------------------------------------------------------------
+
+from tkinter import *
+from chrono import *
+from random import randrange, choice
+
+#definition des variables rayon, cercles, duree du jeu, couleur
+r = 5
+cercles = []
+duree = 15
+coul = 'blue'
+couls = ['blue','red','green', 'black', 'purple', 'grey']
+
+def pointeur(event):
+    global r, coul
+    #si le temps s'acheve on s'arrete
+    #si deux cercles s'intersectent on s'arrete
+    inter = False
+
+    if chrono.value > 0:
+
+        if len(cercles) < 2 :
+            chaine.configure(text= "clic en x = " + str(event.x) + ', y = ' + str(event.y))
+            cadre.create_oval(event.x-r, event.y - r, event.x + r, event.y + r, outline=coul)
+            cercles.append((event.x,event.y,r))
+            # on change le rayon alÃ©atoiremet
+            r = randrange(1,15)
+            # on change la couleur alÃ©atoirement
+            coul = choice(couls)
+        else :
+            # algorithme ÃƒÆ’Ã‚Â  revoir !!!
+            for c in cercles[:-1] :
+                # si la distance entre le dernier disque et un des cercles prÃƒÆ’Ã‚Â©cÃƒÆ’Ã‚Â©dents est plus petit que 2r, il y a intersection, on s'arrete
+                if ( (cercles[-1][0]-c[0])**2+(cercles[-1][1]-c[1])**2 ) < (cercles[-1][2]+c[2])**2 :
+                    inter = True
+                    rayons = [c[2] for c in cercles]
+                    rmoy = sum(rayons)/len(rayons)
+                    chaine.configure(text ="Ooh, il y a intersection de deux cercles.\n Votre score est : " + str(len(cercles)*r/duree * 1000))
+
+
+
+            if not(inter) :
+                chaine.configure(text= "clic en x = " + str(event.x) + ', y = ' + str(event.y))
+                cadre.create_oval(event.x-r, event.y - r, event.x + r, event.y + r, outline=coul)
+                cercles.append((event.x,event.y,r))
+                # on change le rayon alÃ©atoiremet
+                r = randrange(1,15)
+                # on change la couleur alÃ©atoirement
+                coul = choice(couls)
+
+    elif chrono.value == 0 :  chaine.configure(text ="Dommage le temps est fini.\n Votre score est : " + str(len(cercles)*r/duree * 1000))
+
+fen = Tk()
+cadre = Canvas(fen, height =150, width =200, bg ="light yellow" )
+
+
+cadre.bind("<Button-1>", pointeur)
+cadre.pack()
+chaine = Label(fen)
+chaine.pack()
+
+chrono = Chrono(fen,duree)
+chrono.pack()
+
+fen.mainloop()
+
